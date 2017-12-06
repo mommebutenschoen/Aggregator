@@ -7,6 +7,10 @@ try:
     from itertools import izip as zip
 except:
     pass
+try:
+    from itertools import irange as irange
+except:
+    pass
 
 class AggregatorMapping:
     """"Base class for aggregation of high resolution data on coarser grids.
