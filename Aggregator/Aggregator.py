@@ -1,4 +1,4 @@
-from numpy import where,ones
+from numpy import where,ones,percentile,array
 from numpy.ma import getmaskarray, masked_where, median
 from matplotlib.path import Path
 from csv import writer,reader
@@ -50,10 +50,11 @@ class AggregatorMapping:
             coarse resolution data as 1D structure of same type as input data.
         """
 
-        coarseData=fv*ones(self.size)
+        N=self.size
+        coarseData=fv*ones(N)
         for n,idn in enumerate(self.indices):
             if progress:
-                if n%progress==0: print("Retrieved mappings for {} of {} polygons".format(n,self.size))
+                if n%progress==0: print("Retrieved mappings for {} of {} polygons".format(n,N))
             if idn:
                 aggregates=method(data[idn])
                 coarseData[n]=where(getmaskarray(aggregates),fv,aggregates)
@@ -83,7 +84,7 @@ class Aggregator(AggregatorMapping):
         points(sequence of coordinate pairs): Cell centre points of high resolution grid pixels.
     """
 
-    def __init__(self,paths,points,progress=False):
+    def __init__(self,paths,points,progress=False,geographic=False):
 
         """Defines mappings of points to polygon paths.
 
@@ -91,22 +92,40 @@ class Aggregator(AggregatorMapping):
             paths(sequence of matplotlib.path.Path objects): Polygons of coarse resolution grids.
             points(sequence of coordinate pairs): Cell centre points of high resolution grid pixels.
             progress(integer,): Interval in which to report mapping progress (message printing each "progress" polygons)
+            geographic: logical flag for coordinates in geographic lon,lat coordinates. Assumes points and polygon
+                vertices to be defined with longitude as first coordinate, i.e. [[lon0,lat0],[lon1,lat1],...].
+                Not required if polygons and points share the same cyclic border and no polygon extends across it.
         """
 
         self.size=len(paths)
+        apoints = array(points)
         idx=[ [] for n in range(self.size) ]
         if progress: n=0
         for path,idn in zip(paths,idx):
+            if geographic:
+                lon=path.vertices[:,0]
+                lon_0=percentile(lon,50,interpolation='nearest')
+                lon_loc=where(lon>lon_0+180,lon-360.,lon)
+                lon_loc=where(lon<lon_0-180,lon+360.,lon)
+                path_loc=Path(array([lon_loc,path.vertices[:,1]]).T)
+            else:
+                path_loc=path
             if progress:
                 if n%progress==0: print("Retrieved mappings for {} of {} polygons".format(n,self.size))
                 n+=1
             if path.get_extents().size.any():
-                inside=list(where(path.contains_points(points))[0])
+                if geographic:
+                    lon_loc=where(apoints[:,0]>lon_0+180,apoints[:,0]-360.,apoints[:,0])
+                    lon_loc=where(apoints[:,0]<lon_0-180,apoints[:,0]+360.,apoints[:,0])
+                    points_loc=array([lon_loc,apoints[:,1]]).T
+                else:
+                    points_loc=points
+                inside=list(where(path_loc.contains_points(points_loc))[0])
                 if len(inside)>0:
                     idn.extend(inside)
         self.indices = idx
-        self.points = points
         self.paths = paths
+        self.points = apoints
         if progress: print("Mapping completed.")
 
 
