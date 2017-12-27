@@ -106,7 +106,7 @@ class Aggregator(AggregatorMapping):
                 lon=path.vertices[:,0]
                 lon_0=percentile(lon,50,interpolation='nearest')
                 lon_loc=where(lon>lon_0+180,lon-360.,lon)
-                lon_loc=where(lon<lon_0-180,lon+360.,lon)
+                lon_loc=where(lon<lon_0-180,lon+360.,lon_loc)
                 path_loc=Path(array([lon_loc,path.vertices[:,1]]).T)
             else:
                 path_loc=path
@@ -116,7 +116,7 @@ class Aggregator(AggregatorMapping):
             if path.get_extents().size.any():
                 if geographic:
                     lon_loc=where(apoints[:,0]>lon_0+180,apoints[:,0]-360.,apoints[:,0])
-                    lon_loc=where(apoints[:,0]<lon_0-180,apoints[:,0]+360.,apoints[:,0])
+                    lon_loc=where(apoints[:,0]<lon_0-180,apoints[:,0]+360.,lon_loc)
                     points_loc=array([lon_loc,apoints[:,1]]).T
                 else:
                     points_loc=points
