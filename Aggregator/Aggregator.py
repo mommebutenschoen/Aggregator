@@ -1,3 +1,4 @@
+import logging
 from numpy import where,ones,percentile,array
 from numpy.ma import getmaskarray, masked_where, median
 from matplotlib.path import Path
@@ -8,7 +9,7 @@ try:
 except:
     pass
 try:
-    from itertools import irange as irange
+    from itertools import irange as range
 except:
     pass
 
@@ -54,11 +55,11 @@ class AggregatorMapping:
         coarseData=fv*ones(N)
         for n,idn in enumerate(self.indices):
             if progress:
-                if n%progress==0: print("Retrieved mappings for {} of {} polygons".format(n,N))
+                if n%progress==0: logging.info("Retrieved mappings for {} of {} polygons".format(n,N))
             if idn:
                 aggregates=method(data[idn])
                 coarseData[n]=where(getmaskarray(aggregates),fv,aggregates)
-        if progress: print("Aggregation completed.")
+        if progress: lgging.info("Aggregation completed.")
         return coarseData
 
     def save_csv_gz(self,filename):
@@ -111,7 +112,7 @@ class Aggregator(AggregatorMapping):
             else:
                 path_loc=path
             if progress:
-                if n%progress==0: print("Retrieved mappings for {} of {} polygons".format(n,self.size))
+                if n%progress==0: logging.info("Retrieved mappings for {} of {} polygons".format(n,self.size))
                 n+=1
             if path.get_extents().size.any():
                 if geographic:
@@ -126,7 +127,7 @@ class Aggregator(AggregatorMapping):
         self.indices = idx
         self.paths = paths
         self.points = apoints
-        if progress: print("Mapping completed.")
+        if progress: logging.info("Mapping completed.")
 
 
 def load_csv_gz(filename):
