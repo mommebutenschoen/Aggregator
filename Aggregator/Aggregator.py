@@ -41,10 +41,10 @@ class AggregatorMapping:
         """Aggregates high resolution data (in 1D) on coarse resolution 1D structure.
 
         Args:
-            data(numpy.array or numpy.ma.array in 1D): High resolution data.
-            method(function): Method used for aggregating reducing a sequence of values passed as input arguments to a single value.
-            fv(same array dtype as data): Fill value to be used for coarse data where no high resolution data is available.
-            progress(integer,): Interval in which to report mapping progress (message printing each "progress" polygons)
+            data (numpy.array or numpy.ma.array in 1D): High resolution data.
+            method (function): Method used for aggregating reducing a sequence of values passed as input arguments to a single value.
+            fv (same array dtype as data): Fill value to be used for coarse data where no high resolution data is available.
+            progress (integer): Interval in which to report mapping progress (message printing each "progress" polygons)
 
         Returns:
             coarse resolution data as 1D structure of same type as input data.
@@ -80,8 +80,8 @@ class Aggregator(AggregatorMapping):
     Attributes:
         indices (list of lists of integers): Mappings of high resolution grid points to coarse grid polygons.
         size (integer): Number of coarse grid polygons.
-        paths(sequence of matplotlib.path.Path objects): Polygons of coarse resolution grids.
-        points(sequence of coordinate pairs): Cell centre points of high resolution grid pixels.
+        paths (sequence of matplotlib.path.Path objects): Polygons of coarse resolution grids.
+        points (sequence of coordinate pairs): Cell centre points of high resolution grid pixels.
     """
 
     def __init__(self,paths,points,progress=False,geographic=False):
@@ -89,9 +89,9 @@ class Aggregator(AggregatorMapping):
         """Defines mappings of points to polygon paths.
 
         Args:
-            paths(sequence of matplotlib.path.Path objects): Polygons of coarse resolution grids.
-            points(sequence of coordinate pairs): Cell centre points of high resolution grid pixels.
-            progress(integer,): Interval in which to report mapping progress (message printing each "progress" polygons)
+            paths (sequence of matplotlib.path.Path objects): Polygons of coarse resolution grids.
+            points (sequence of coordinate pairs): Cell centre points of high resolution grid pixels.
+            progress (integer,): Interval in which to report mapping progress (message printing each "progress" polygons)
             geographic: logical flag for coordinates in geographic lon,lat coordinates. Assumes points and polygon
                 vertices to be defined with longitude as first coordinate, i.e. [[lon0,lat0],[lon1,lat1],...].
                 Not required if polygons and points share the same cyclic border and no polygon extends across it.
@@ -132,10 +132,10 @@ class Aggregator(AggregatorMapping):
 def load_csv_gz(filename):
     """Load mapping from gzipped csv file.
     Args:
-        filename(str): name of csv.gz file to read
+        filename (str): name of csv.gz file to read
 
     Returns:
-        AggregatorMapping object with mapping defined in csv file."""
+        AggregatorMapping instance with mapping defined in csv file."""
 
     with opengz(filename,'rt') as fid:
         csv=reader(fid)

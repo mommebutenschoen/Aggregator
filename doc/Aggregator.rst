@@ -1,11 +1,11 @@
-Aggregator package
-==============================
+Aggregator documentation
+========================
 
 Submodules
 ----------
 
 Aggregator.Aggregator module
-----------------------------------------------------
+----------------------------
 
 .. automodule:: Aggregator.Aggregator
     :members:
